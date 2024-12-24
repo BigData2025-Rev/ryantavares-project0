@@ -2,12 +2,15 @@
 
 from depo import Depo
 from delivery import Delivery
+from courier import Courier
 import json
+
+sam = Courier() # The player
 
 def main():
     option = input("[N]ew game\n" +
-                   "[Q]uit\n")
-    match option.lower():
+                   "[Q]uit\n").lower()
+    match option:
         case 'n':
             print("Starting a new game...")
             new_game()
@@ -22,7 +25,8 @@ def new_game():
         starting_depo = Depo(**depos_json[0])
 
     # start
-    select_deliveries(starting_depo.deliveries)
+    sam.from_depo = starting_depo
+    select_deliveries(sam.from_depo.deliveries)
 
 def select_deliveries(deliveries: list[Delivery]):
     selected_deliveries = []
@@ -38,28 +42,29 @@ def select_deliveries(deliveries: list[Delivery]):
 
         # Handle input.
         #   TODO:   Handle removal of selected deliveries before confirmation.
-        option = input(prompt)
-        if option == 'c':
+        option = input(prompt).lower()
+        if option == 'c' and len(selected_deliveries) > 0:
             confirmed = True
             print("Deliveries confirmed. Time to load up for departure.")
-            arrange_parcels(selected_deliveries)
+            load_up(selected_deliveries)
         else:
             for delivery in deliveries:
                 if option == delivery.key:
                     selected_deliveries.append(delivery)
                     deliveries.remove(delivery)
 
-# TODO: Implement arrange_parcels()
-def arrange_parcels(selected_deliveries: list[Delivery]):
-    print("Arranging parcels")
-    print(selected_deliveries)
+def load_up(selected_deliveries: list[Delivery]):
+    parcels = []
+    for delivery in selected_deliveries:
+         parcels.extend(delivery.generate_parcels())
+    sam.arrange_parcels(parcels)
     select_destination()
 
 # TODO: Implement select_destination()
 def select_destination():
     print("Selecting Destination...")
     print("Departing to [Destination]...")
-    traverse(101)
+    #traverse(101)
 
 # TODO: Implement traverse()
 def traverse(miles):
