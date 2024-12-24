@@ -45,6 +45,7 @@ def select_deliveries(deliveries: list[Delivery]):
         option = input(prompt).lower()
         if option == 'c' and len(selected_deliveries) > 0:
             confirmed = True
+            sam.active_deliveries = selected_deliveries
             print("Deliveries confirmed. Time to load up for departure.")
             load_up(selected_deliveries)
         else:
