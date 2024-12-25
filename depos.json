@@ -1,6 +1,8 @@
 [
     {
-        "name": "Capitol Knot",
+        "key": "k",
+        "name": "Capitol [K]not",
+        "coords": {"x": 0, "y": 0},
         "deliveries": [
             {
             "key": "1",
@@ -8,7 +10,7 @@
             "name_of_parcels": "Antibiotics",
             "num_of_parcels": 20,
             "total_weight": 20,
-            "destination": "Waystation"
+            "destination": "[W]aystation"
             },
             {
             "key": "2",
@@ -16,7 +18,7 @@
             "name_of_parcels": "Parts",
             "num_of_parcels": 5,
             "total_weight": 100,
-            "destination": "Distribution Center"
+            "destination": "[D]istribution Center"
             },
             {
             "key": "3",
@@ -24,8 +26,14 @@
             "name_of_parcels": "Food",
             "num_of_parcels": 15,
             "total_weight": 30,
-            "destination": "Wind Farm"
+            "destination": "Wind [F]arm"
             }
         ]
+    },
+    {
+        "key": "d",
+        "name": "[D]istribution Center",
+        "coords": {"x": 5, "y": 5},
+        "deliveries": []
     }
 ]
