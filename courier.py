@@ -10,7 +10,7 @@ class Courier():
     MAX_SIDE_WEIGHT = 30.00
     MAX_TOTAL_WEIGHT = MAX_BACK_WEIGHT + (MAX_SIDE_WEIGHT * 2)
 
-    def __init__(self, load={}, carrying_weight=0, active_deliveries=[], from_depo=None):
+    def __init__(self, load={}, carrying_weight=0, active_deliveries=[], from_depo=None, destination_depo=None):
         self.load = load
         self.load['back'] = {'parcels':[], 'weight':0}
         self.load['left'] = {'parcels':[], 'weight':0}
@@ -18,6 +18,7 @@ class Courier():
         self.carrying_weight = carrying_weight
         self.active_deliveries = active_deliveries
         self.from_depo = from_depo
+        self.destination_depo = destination_depo
     
     # TODO: Refactor arrange_parcels() to have less duplicate code and better string formatting
     def arrange_parcels(self, parcels: list[Parcel]):
