@@ -31,9 +31,21 @@
         ]
     },
     {
+        "key": "w",
+        "name": "[W]aystation",
+        "coords": {"x": 5, "y": 5},
+        "deliveries": []
+    },
+    {
         "key": "d",
         "name": "[D]istribution Center",
-        "coords": {"x": 5, "y": 5},
+        "coords": {"x": 1, "y": 6},
+        "deliveries": []
+    },
+    {
+        "key": "f",
+        "name": "Wind [F]arm",
+        "coords": {"x": -2, "y": 10},
         "deliveries": []
     }
 ]
