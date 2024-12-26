@@ -10,4 +10,6 @@ class Depo:
         self.deliveries = [Delivery(**delivery) for delivery in deliveries]
 
     def distance_to(self, destination_coords):
-        return (destination_coords['x']**2 + destination_coords['y']**2)**0.5
+        a = self.coords['x'] - destination_coords['x']
+        b = self.coords['y'] - destination_coords['y']
+        return (a**2 + b**2)**0.5
