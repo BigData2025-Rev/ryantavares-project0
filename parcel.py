@@ -1,7 +1,8 @@
 """This file defines a parcel object."""
 
 class Parcel:
-    def __init__(self, name, weight, damage=0.00):
+    def __init__(self, dkey, name, weight, damage=0.00):
+        self.dkey = dkey
         self.name = name
         self.weight = weight
         self.damage = damage

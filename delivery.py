@@ -15,5 +15,5 @@ class Delivery:
         parcels = []
         weight_per = self.total_weight / self.num_of_parcels
         for i in range(self.num_of_parcels):
-            parcels.append(Parcel(self.name_of_parcels, weight_per))
+            parcels.append(Parcel(self.key, self.name_of_parcels, weight_per))
         return parcels
