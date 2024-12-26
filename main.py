@@ -91,12 +91,20 @@ def traverse(miles):
     print("...")
     print("...")
     print("...")
-    #arrival()
+    arrival()
 
-# TODO: Implement arrival()
 def arrival():
-    print("Welcome, Sam")
-    print("Looks like you brought something for us. We'll gladly take it off your hands.")
+    print(f"\n*You've arrived at {sam.destination_depo.name.upper()}*\n")
+    print("Welcome, Sam.")
+    if sam.destination_depo.name in [delivery.destination for delivery in sam.active_deliveries]:
+        print("Looks like you brought something for us. We'll gladly take it off your hands.")
+    else:
+        print("Before you go, we might have some deliveries you'd be interested in.")
+    
+    # Update Courier's location.
+    sam.from_depo = sam.destination_depo
+    sam.destination_depo = None
+
     at_depo()
 
 # TODO: Implement at_depo()
