@@ -6,6 +6,7 @@ from courier import Courier
 import json
 
 sam = Courier() # The player
+depos = []
 
 def main():
     option = input("[N]ew game\n" +
@@ -22,7 +23,8 @@ def new_game():
 
     with open("depos.json", 'r') as file:
         depos_json = json.load(file)
-        starting_depo = Depo(**depos_json[0])
+        depos.extend([Depo(**object) for object in depos_json])
+        starting_depo = depos[0]
 
     # start
     sam.from_depo = starting_depo
@@ -61,11 +63,27 @@ def load_up(selected_deliveries: list[Delivery]):
     sam.arrange_parcels(parcels)
     select_destination()
 
-# TODO: Implement select_destination()
 def select_destination():
-    print("Selecting Destination...")
-    print("Departing to [Destination]...")
-    #traverse(101)
+    valid = False
+
+    while valid == False:
+        prompt = "Select Destination:\n"
+        for depo in depos:
+            if depo != sam.from_depo:
+                # TODO: Implement a better way to indicate direction and/or location of potential destinations.
+                prompt += depo.name + f"\t{sam.from_depo.distance_to(depo.coords):.2f} miles away at ({depo.coords['x']}, {depo.coords['y']})" 
+                if depo.name in [delivery.destination for delivery in sam.active_deliveries]:
+                    prompt += "\t*ACTIVE DELIVERY*"
+                prompt += '\n'
+        option = input(prompt).lower()
+        for depo in depos:
+            if option == depo.key and option != sam.from_depo.key:
+                sam.destination_depo = depo
+                valid = True
+    
+    distance = sam.from_depo.distance_to(sam.destination_depo.coords)
+    print(f"Departing for {sam.destination_depo.name}...\n")
+    traverse(distance)
 
 # TODO: Implement traverse()
 def traverse(miles):
@@ -73,7 +91,7 @@ def traverse(miles):
     print("...")
     print("...")
     print("...")
-    arrival()
+    #arrival()
 
 # TODO: Implement arrival()
 def arrival():
