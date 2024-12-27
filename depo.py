@@ -2,6 +2,7 @@
 
 from delivery import Delivery
 from parcel import Parcel
+import csv
 
 class Depo:
     def __init__(self, key, name, coords, deliveries):
@@ -15,6 +16,11 @@ class Depo:
         b = self.coords['y'] - destination_coords['y']
         return (a**2 + b**2)**0.5
 
-    # TODO: Implement store()
     def store(self, parcel: Parcel):
-        print(parcel.name)
+        data = parcel.__dict__
+        file_name = f'depo_stores/{self.name} Store.csv'
+        with open(file_name, 'a') as outfile:
+            writer = csv.DictWriter(outfile, fieldnames=data)
+            if outfile.tell() == 0:
+                writer.writeheader()
+            writer.writerow(data)
