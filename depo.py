@@ -30,3 +30,12 @@ class Depo:
             if outfile.tell() == 0:
                 writer.writeheader()
             writer.writerow(data)
+    
+    def pretty_name(self, underline=False):
+        und = ""
+        end = ""
+        upp_key = self.key.upper()
+        if underline == True:
+            und = "\033[4m"
+            end = "\033[0m"
+        return f"{und}{self.name}{end}".replace(f"[{upp_key}]", f"{upp_key}")

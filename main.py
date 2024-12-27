@@ -25,7 +25,7 @@ def main():
         while at_depo() == True:
             pass
         else:
-            print(f"Departing for {sam.destination_depo.name}...\n")
+            print(f"*Departing for {sam.destination_depo.pretty_name().upper()}...*\n")
             distance = sam.from_depo.distance_to(sam.destination_depo.coords)
             traverse(distance)
 
@@ -37,8 +37,7 @@ def new_game():
     sam.from_depo = starting_depo
 
 def at_depo():
-    #TODO: Remove brackets in depo names when not needed (like in the following case).
-    print(f"\033[4m{sam.from_depo.name}\033[0m")
+    print(f"{sam.from_depo.pretty_name(underline=True)}")
     option = input("[M]ake delivery\n" +
                    "[T]ake on new deliveries\n" + 
                    "Select [D]estination\n" +
@@ -127,7 +126,7 @@ def traverse(miles):
     arrival()
 
 def arrival():
-    print(f"\n*You've arrived at {sam.destination_depo.name.upper()}*\n")
+    print(f"\n*You've arrived at {sam.destination_depo.pretty_name().upper()}*\n")
     print("Welcome, Sam.")
     if sam.destination_depo.name in [delivery.destination for delivery in sam.active_deliveries]:
         print("Looks like you brought something for us. We'll gladly take it off your hands.\n")
