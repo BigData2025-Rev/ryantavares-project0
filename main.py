@@ -8,10 +8,11 @@ import json
 
 sam = Courier()             # The player.
 depos = []                  # Available depos in the world.
+# TODO: Implement global in-game world time.
 
 def main():
     option = input("[N]ew game\n" +
-                   "[Q]uit\n").lower()
+                   "[Q]uit game\n").lower()
     match option:
         case 'n':
             print("Starting a new game...")
@@ -19,20 +20,48 @@ def main():
         case 'q':
             exit()
 
-def new_game():
-    print("Welcome Sam, we have some new deliveries for you:")
+    # Run until user quits at a depo.
+    while True:
+        while at_depo() == True:
+            pass
+        else:
+            print(f"Departing for {sam.destination_depo.name}...\n")
+            distance = sam.from_depo.distance_to(sam.destination_depo.coords)
+            traverse(distance)
 
+def new_game():
     with open("depos.json", 'r') as file:
         depos_json = json.load(file)
         depos.extend([Depo(**object) for object in depos_json])
         starting_depo = depos[0]
-
-    # start
     sam.from_depo = starting_depo
-    select_deliveries(sam.from_depo.deliveries)
+
+def at_depo():
+    #TODO: Remove brackets in depo names when not needed (like in the following case).
+    print(f"\033[4m{sam.from_depo.name}\033[0m")
+    option = input("[M]ake delivery\n" +
+                   "[T]ake on new deliveries\n" + 
+                   "Select [D]estination\n" +
+                   "[Q]uit game\n").lower()
+    if option == 'm':
+        sam.make_delivery(dt.datetime.today())
+        return True
+    elif option == 't':
+        select_deliveries(sam.from_depo.deliveries)
+        return True
+    elif option == 'd':
+        if select_destination() == True:
+            return False    # Courier is departing
+        else:
+            return True
+    elif option == 'q':
+        quit()
+    else:
+        return True
 
 def select_deliveries(deliveries: list[Delivery]):
     selected_deliveries = []
+    previously_active_deliveries = sam.active_deliveries.copy()
     confirmed = False
 
     while confirmed == False:
@@ -43,9 +72,9 @@ def select_deliveries(deliveries: list[Delivery]):
                 prompt = prompt + delivery.title + "\n"
         if len(selected_deliveries) > 0:
             prompt += "[C]onfirm selected deliveries?\n"
+        prompt += "[x] to cancel\n"
 
         # Handle input.
-        #   TODO:   Handle removal of selected deliveries before confirmation.
         option = input(prompt).lower()
         if option == 'c' and len(selected_deliveries) > 0:
             confirmed = True
@@ -53,6 +82,9 @@ def select_deliveries(deliveries: list[Delivery]):
             for delivery in sam.active_deliveries:
                 delivery.time_activated = dt.datetime.today()
             load_up(selected_deliveries)
+        elif option == 'x':
+            sam.active_deliveries = previously_active_deliveries
+            return
         else:
             for delivery in deliveries:
                 if option == delivery.key and delivery not in sam.active_deliveries:
@@ -64,7 +96,6 @@ def load_up(selected_deliveries: list[Delivery]):
     for delivery in selected_deliveries:
          parcels.extend(delivery.generate_parcels())
     sam.arrange_parcels(parcels)
-    select_destination()
 
 def select_destination():
     valid = False
@@ -78,15 +109,14 @@ def select_destination():
                 if depo.name in [delivery.destination for delivery in sam.active_deliveries]:
                     prompt += "\t*ACTIVE DELIVERY*"
                 prompt += '\n'
+        prompt += '[x] to cancel\n'
         option = input(prompt).lower()
         for depo in depos:
             if option == depo.key and option != sam.from_depo.key:
                 sam.destination_depo = depo
-                valid = True
-    
-    distance = sam.from_depo.distance_to(sam.destination_depo.coords)
-    print(f"Departing for {sam.destination_depo.name}...\n")
-    traverse(distance)
+                return True
+            elif option == 'x':
+                return False
 
 # TODO: Implement traverse()
 def traverse(miles):
@@ -100,28 +130,12 @@ def arrival():
     print(f"\n*You've arrived at {sam.destination_depo.name.upper()}*\n")
     print("Welcome, Sam.")
     if sam.destination_depo.name in [delivery.destination for delivery in sam.active_deliveries]:
-        print("Looks like you brought something for us. We'll gladly take it off your hands.")
+        print("Looks like you brought something for us. We'll gladly take it off your hands.\n")
     else:
-        print("Before you go, we might have some deliveries you'd be interested in.")
-        
+        print("Before you go, we might have some deliveries you'd be interested in.\n")
     # Update Courier's location.
     sam.from_depo = sam.destination_depo
     sam.destination_depo = None
-    at_depo()
-
-def at_depo():
-    option = input("[M]ake delivery\n" +
-                   "[T]ake on new deliveries\n" + 
-                   "Select [D]estination\n").lower()
-    if option == 'm':
-        sam.make_delivery(dt.datetime.today())
-        at_depo()
-    elif option == 't':
-        select_deliveries(sam.from_depo.deliveries)
-        at_depo()
-    elif option == 'd':
-        select_destination()
-
 
 
 if __name__ == "__main__":
