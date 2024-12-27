@@ -20,9 +20,7 @@ class Courier():
         self.from_depo = from_depo
         self.destination_depo = destination_depo
 
-    # TODO: Account for time to complete delivery.
-    # TODO: Complete implementation, particularly for accounting/writing delivery statistics (may be more appropriate for Delivery class)
-    def make_delivery(self):
+    def make_delivery(self, time_completed):
         for delivery in self.active_deliveries:
             if self.from_depo.name == delivery.destination:
                 num_delivered = 0
@@ -33,9 +31,7 @@ class Courier():
                         num_delivered += 1
                         total_damage += parcel.damage
                         self.remove_parcel(parcel, side)
-                print(f"{num_delivered} {delivery.name_of_parcels}")
-                print(f"Damage Rate: {total_damage / delivery.num_of_parcels:.2f}")
-                print(f"Completion Rate: {num_delivered / delivery.num_of_parcels:.2f}")
+                delivery.record(num_delivered, total_damage, time_completed)
                 self.active_deliveries.remove(delivery)
 
     def remove_parcel(self, parcel, side):

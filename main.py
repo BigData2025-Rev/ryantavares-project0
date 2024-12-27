@@ -3,10 +3,11 @@
 from depo import Depo
 from delivery import Delivery
 from courier import Courier
+import datetime as dt
 import json
 
-sam = Courier() # The player.
-depos = []      # Available depos in the world.
+sam = Courier()             # The player.
+depos = []                  # Available depos in the world.
 
 def main():
     option = input("[N]ew game\n" +
@@ -49,6 +50,8 @@ def select_deliveries(deliveries: list[Delivery]):
         if option == 'c' and len(selected_deliveries) > 0:
             confirmed = True
             print("Deliveries confirmed. Time to load up for departure.")
+            for delivery in sam.active_deliveries:
+                delivery.time_activated = dt.datetime.today()
             load_up(selected_deliveries)
         else:
             for delivery in deliveries:
@@ -109,9 +112,9 @@ def arrival():
 def at_depo():
     option = input("[M]ake delivery\n" +
                    "[T]ake on new deliveries\n" + 
-                   "Select [D]estination").lower()
+                   "Select [D]estination\n").lower()
     if option == 'm':
-        sam.make_delivery()
+        sam.make_delivery(dt.datetime.today())
         at_depo()
     elif option == 't':
         select_deliveries(sam.from_depo.deliveries)
