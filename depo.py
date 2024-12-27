@@ -17,8 +17,14 @@ class Depo:
         return (a**2 + b**2)**0.5
 
     def store(self, parcel: Parcel):
-        data = parcel.__dict__
-        file_name = f'depo_stores/{self.name} Store.csv'
+        data = {
+            'in-depo': self.name,
+            'from-delivery': parcel.dkey,
+            'name': parcel.name,
+            'weight': parcel.weight,
+            'damage': 0
+        }
+        file_name = f'records/delivered_parcels.csv'
         with open(file_name, 'a') as outfile:
             writer = csv.DictWriter(outfile, fieldnames=data)
             if outfile.tell() == 0:
