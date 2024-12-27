@@ -19,6 +19,29 @@ class Courier():
         self.active_deliveries = active_deliveries
         self.from_depo = from_depo
         self.destination_depo = destination_depo
+
+    # TODO: Account for time to complete delivery.
+    # TODO: Complete implementation, particularly for accounting/writing delivery statistics (may be more appropriate for Delivery class)
+    def make_delivery(self):
+        for delivery in self.active_deliveries:
+            if self.from_depo.name == delivery.destination:
+                num_delivered = 0
+                total_damage = 0.00
+                for side in self.load:
+                    for parcel in [parcel_for for parcel_for in self.load[side]['parcels'] if parcel_for.dkey == delivery.key]:
+                        self.from_depo.store(parcel)
+                        num_delivered += 1
+                        total_damage += parcel.damage
+                        self.remove_parcel(parcel, side)
+                print(f"{num_delivered} {delivery.name_of_parcels}")
+                print(f"Damage Rate: {total_damage / delivery.num_of_parcels:.2f}")
+                print(f"Completion Rate: {num_delivered / delivery.num_of_parcels:.2f}")
+                self.active_deliveries.remove(delivery)
+
+    def remove_parcel(self, parcel, side):
+        self.load[side]['parcels'].remove(parcel)
+        self.load[side]['weight'] -= parcel.weight
+        self.carrying_weight -= parcel.weight
     
     # TODO: Refactor arrange_parcels() to have less duplicate code and better string formatting
     def arrange_parcels(self, parcels: list[Parcel]):

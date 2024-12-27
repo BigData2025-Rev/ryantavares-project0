@@ -1,6 +1,7 @@
 """This file defines a depo object."""
 
 from delivery import Delivery
+from parcel import Parcel
 
 class Depo:
     def __init__(self, key, name, coords, deliveries):
@@ -13,3 +14,7 @@ class Depo:
         a = self.coords['x'] - destination_coords['x']
         b = self.coords['y'] - destination_coords['y']
         return (a**2 + b**2)**0.5
+
+    # TODO: Implement store()
+    def store(self, parcel: Parcel):
+        print(parcel.name)
