@@ -28,10 +28,10 @@ class Delivery:
         damage_rate = total_damage / self.num_of_parcels
         minutes_to_complete = round((time_completed - self.time_activated).seconds / 60, 2)
         data = {
-            'delivery-key': self.key,
-            'completion-rate': completion_rate,
-            'damage-rate': damage_rate,
-            'minutes-to-complete': minutes_to_complete
+            'delivery_key': self.key,
+            'completion_rate': completion_rate,
+            'damage_rate': damage_rate,
+            'minutes_to_complete': minutes_to_complete
             }
         with open(file_name, 'a') as outfile:
             writer = csv.DictWriter(outfile, fieldnames=data)

@@ -18,8 +18,8 @@ class Depo:
 
     def store(self, parcel: Parcel):
         data = {
-            'in-depo': self.name,
-            'from-delivery': parcel.dkey,
+            'in_depo': self.name,
+            'from_delivery': parcel.dkey,
             'name': parcel.name,
             'weight': parcel.weight,
             'damage': 0
