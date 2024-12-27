@@ -5,8 +5,8 @@ from delivery import Delivery
 from courier import Courier
 import json
 
-sam = Courier() # The player
-depos = []
+sam = Courier() # The player.
+depos = []      # Available depos in the world.
 
 def main():
     option = input("[N]ew game\n" +
@@ -38,7 +38,8 @@ def select_deliveries(deliveries: list[Delivery]):
         # Build prompt.
         prompt = ""
         for delivery in deliveries:
-            prompt = prompt + delivery.title + "\n"
+            if delivery not in sam.active_deliveries:
+                prompt = prompt + delivery.title + "\n"
         if len(selected_deliveries) > 0:
             prompt += "[C]onfirm selected deliveries?\n"
 
@@ -47,14 +48,13 @@ def select_deliveries(deliveries: list[Delivery]):
         option = input(prompt).lower()
         if option == 'c' and len(selected_deliveries) > 0:
             confirmed = True
-            sam.active_deliveries = selected_deliveries
             print("Deliveries confirmed. Time to load up for departure.")
             load_up(selected_deliveries)
         else:
             for delivery in deliveries:
-                if option == delivery.key:
+                if option == delivery.key and delivery not in sam.active_deliveries:
                     selected_deliveries.append(delivery)
-                    deliveries.remove(delivery)
+                    sam.active_deliveries.append(delivery)
 
 def load_up(selected_deliveries: list[Delivery]):
     parcels = []
@@ -100,18 +100,24 @@ def arrival():
         print("Looks like you brought something for us. We'll gladly take it off your hands.")
     else:
         print("Before you go, we might have some deliveries you'd be interested in.")
-    
+        
     # Update Courier's location.
     sam.from_depo = sam.destination_depo
     sam.destination_depo = None
-
     at_depo()
 
-# TODO: Implement at_depo()
 def at_depo():
-    print("[M]ake delivery")
-    print("[T]ake on new deliveries")
-    print("Select [D]estination")
+    option = input("[M]ake delivery\n" +
+                   "[T]ake on new deliveries\n" + 
+                   "Select [D]estination").lower()
+    if option == 'm':
+        sam.make_delivery()
+        at_depo()
+    elif option == 't':
+        select_deliveries(sam.from_depo.deliveries)
+        at_depo()
+    elif option == 'd':
+        select_destination()
 
 
 
