@@ -20,13 +20,6 @@ class Courier():
         self.from_depo = from_depo
         self.destination_depo = destination_depo
     
-    def unload_parcels(self) -> list[Parcel]:
-        unloaded_parcels = []
-        unloaded_parcels.extend(self.load['back']['parcels'])
-        unloaded_parcels.extend(self.load['left']['parcels'])
-        unloaded_parcels.extend(self.load['right']['parcels'])
-        return unloaded_parcels
-    
     # TODO: Refactor arrange_parcels() to have less duplicate code and better string formatting
     def arrange_parcels(self, parcels: list[Parcel]):
         # Load each parcel onto back, left, or right.
