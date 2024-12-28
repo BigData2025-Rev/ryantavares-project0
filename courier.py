@@ -1,6 +1,7 @@
 """This file defines a courier object."""
 
 from parcel import Parcel
+from exceptions.invalid_input_error import InvalidInputError
 
 class Courier():
     MAX_BACK_ITEMS = 40
@@ -45,24 +46,29 @@ class Courier():
         for parcel in parcels:
             loaded = False
             while loaded == False:
-                option = input(f"Load \'{parcel.name}, weight: {parcel.weight}\' onto [B]ack, [L]eft, [R]ight? (or [D]epart without loading remaining items)\n").lower()
-                if option == 'b':
-                    if self.load['back']['weight'] + parcel.weight <= self.MAX_BACK_WEIGHT and len(self.load['back']['parcels']) < self.MAX_BACK_ITEMS:
-                        self.load['back']['parcels'].append(parcel)
-                        self.load['back']['weight'] += parcel.weight
-                    loaded = True
-                elif option == 'l':
-                    if self.load['left']['weight'] + parcel.weight <= self.MAX_SIDE_WEIGHT and len(self.load['left']['parcels']) < self.MAX_SIDE_ITEMS:
-                        self.load['left']['parcels'].append(parcel)
-                        self.load['left']['weight'] += parcel.weight
+                try:
+                    option = input(f"Load \'{parcel.name}, weight: {parcel.weight}\' onto [B]ack, [L]eft, [R]ight? (or [D]epart without loading remaining items)\n").lower()
+                    if option == 'b':
+                        if self.load['back']['weight'] + parcel.weight <= self.MAX_BACK_WEIGHT and len(self.load['back']['parcels']) < self.MAX_BACK_ITEMS:
+                            self.load['back']['parcels'].append(parcel)
+                            self.load['back']['weight'] += parcel.weight
                         loaded = True
-                elif option == 'r':
-                    if self.load['right']['weight'] + parcel.weight <= self.MAX_SIDE_WEIGHT and len(self.load['right']['parcels']) < self.MAX_SIDE_ITEMS:
-                        self.load['right']['parcels'].append(parcel)
-                        self.load['right']['weight'] += parcel.weight
-                        loaded = True
-                elif option == 'd':
-                    return
+                    elif option == 'l':
+                        if self.load['left']['weight'] + parcel.weight <= self.MAX_SIDE_WEIGHT and len(self.load['left']['parcels']) < self.MAX_SIDE_ITEMS:
+                            self.load['left']['parcels'].append(parcel)
+                            self.load['left']['weight'] += parcel.weight
+                            loaded = True
+                    elif option == 'r':
+                        if self.load['right']['weight'] + parcel.weight <= self.MAX_SIDE_WEIGHT and len(self.load['right']['parcels']) < self.MAX_SIDE_ITEMS:
+                            self.load['right']['parcels'].append(parcel)
+                            self.load['right']['weight'] += parcel.weight
+                            loaded = True
+                    elif option == 'd':
+                        return
+                    else:
+                        raise InvalidInputError(['b', 'l', 'r', 'd'])
+                except InvalidInputError as e:
+                    print(e)
             self.carrying_weight = self.load['back']['weight'] + self.load['left']['weight'] + self.load['right']['weight']
 
             # Show current load.

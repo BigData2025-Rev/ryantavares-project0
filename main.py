@@ -1,5 +1,6 @@
 """The main entry point for the text-based game."""
 
+from exceptions.invalid_input_error import InvalidInputError
 from depo import Depo
 from delivery import Delivery
 from courier import Courier
@@ -11,14 +12,8 @@ depos = []                  # Available depos in the world.
 # TODO: Implement global in-game world time.
 
 def main():
-    option = input("[N]ew game\n" +
-                   "[Q]uit game\n").lower()
-    match option:
-        case 'n':
-            print("Starting a new game...")
-            new_game()
-        case 'q':
-            exit()
+    while game_loaded() == False:
+        pass
 
     # Run until user quits at a depo.
     while True:
@@ -29,6 +24,23 @@ def main():
             distance = sam.from_depo.distance_to(sam.destination_depo.coords)
             traverse(distance)
 
+def game_loaded():
+    try:
+        option = input("[N]ew game\n" +
+                    "[Q]uit game\n").lower()
+        match option:
+            case 'n':
+                print("Starting a new game...\n")
+                new_game()
+                return True
+            case 'q':
+                exit()
+            case _:
+                raise InvalidInputError(['n', 'q'])
+    except InvalidInputError as e:
+        print(e)
+        return False
+
 def new_game():
     with open("depos.json", 'r') as file:
         depos_json = json.load(file)
@@ -38,24 +50,29 @@ def new_game():
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
-    option = input("[M]ake delivery\n" +
-                   "[T]ake on new deliveries\n" + 
-                   "Select [D]estination\n" +
-                   "[Q]uit game\n").lower()
-    if option == 'm':
-        sam.make_delivery(dt.datetime.today())
-        return True
-    elif option == 't':
-        select_deliveries(sam.from_depo.deliveries)
-        return True
-    elif option == 'd':
-        if select_destination() == True:
-            return False    # Courier is departing
-        else:
+
+    try:
+        option = input("[M]ake delivery\n" +
+                    "[T]ake on new deliveries\n" + 
+                    "Select [D]estination\n" +
+                    "[Q]uit game\n").lower()
+        if option == 'm':
+            sam.make_delivery(dt.datetime.today())
             return True
-    elif option == 'q':
-        quit()
-    else:
+        elif option == 't':
+            select_deliveries(sam.from_depo.deliveries)
+            return True
+        elif option == 'd':
+            if select_destination() == True:
+                return False    # Courier is departing
+            else:
+                return True
+        elif option == 'q':
+            quit()
+        else:
+            raise InvalidInputError(['m', 't', 'd', 'q'])
+    except InvalidInputError as e:
+        print(e)
         return True
 
 def select_deliveries(deliveries: list[Delivery]):
@@ -64,31 +81,39 @@ def select_deliveries(deliveries: list[Delivery]):
     confirmed = False
 
     while confirmed == False:
+        selectable_deliveries = [delivery for delivery in deliveries if delivery not in sam.active_deliveries]
         # Build prompt.
         prompt = ""
-        for delivery in deliveries:
-            if delivery not in sam.active_deliveries:
-                prompt = prompt + delivery.title + "\n"
+        for delivery in selectable_deliveries:
+            prompt = prompt + delivery.title + "\n"
         if len(selected_deliveries) > 0:
             prompt += "[C]onfirm selected deliveries?\n"
         prompt += "[x] to cancel\n"
 
         # Handle input.
-        option = input(prompt).lower()
-        if option == 'c' and len(selected_deliveries) > 0:
-            confirmed = True
-            print("Deliveries confirmed. Time to load up for departure.")
-            for delivery in sam.active_deliveries:
-                delivery.time_activated = dt.datetime.today()
-            load_up(selected_deliveries)
-        elif option == 'x':
-            sam.active_deliveries = previously_active_deliveries
-            return
-        else:
-            for delivery in deliveries:
-                if option == delivery.key and delivery not in sam.active_deliveries:
-                    selected_deliveries.append(delivery)
-                    sam.active_deliveries.append(delivery)
+        selectable_delivery_keys = [delivery.key for delivery in selectable_deliveries]
+        try:
+            option = input(prompt).lower()
+            if option == 'c' and len(selected_deliveries) > 0:
+                confirmed = True
+                print("Deliveries confirmed. Time to load up for departure.")
+                for delivery in sam.active_deliveries:
+                    delivery.time_activated = dt.datetime.today()
+                load_up(selected_deliveries)
+            elif option == 'x':
+                sam.active_deliveries = previously_active_deliveries
+                return
+            elif option in selectable_delivery_keys:
+                for delivery in selectable_deliveries:
+                    if option == delivery.key:
+                        selected_deliveries.append(delivery)
+                        sam.active_deliveries.append(delivery)
+            else:
+                valid_keys = selectable_delivery_keys
+                raise InvalidInputError(valid_keys + ['c', 'x']) if len(selected_deliveries) > 0 else InvalidInputError(valid_keys + ['x'])
+        except InvalidInputError as e:
+            print(e)
+
 
 def load_up(selected_deliveries: list[Delivery]):
     parcels = []
@@ -109,13 +134,20 @@ def select_destination():
                     prompt += "\t*ACTIVE DELIVERY*"
                 prompt += '\n'
         prompt += '[x] to cancel\n'
-        option = input(prompt).lower()
-        for depo in depos:
-            if option == depo.key and option != sam.from_depo.key:
-                sam.destination_depo = depo
-                return True
-            elif option == 'x':
+
+        try:
+            option = input(prompt).lower()
+            for depo in depos:
+                if option == depo.key and option != sam.from_depo.key:
+                    sam.destination_depo = depo
+                    return True
+            if option == 'x':
                 return False
+            else:
+                raise InvalidInputError([depo.key for depo in depos if depo is not sam.from_depo] + ['x'])
+        except InvalidInputError as e:
+            print(e)
+
 
 # TODO: Implement traverse()
 def traverse(miles):
