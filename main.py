@@ -9,7 +9,7 @@ import json
 
 sam = Courier()             # The player.
 depos = []                  # Available depos in the world.
-# TODO: Implement global in-game world time.
+now = dt.datetime(year=2024, month=12, day=30, hour=9, minute=0, second=0, microsecond=0)
 
 def main():
     while game_loaded() == False:
@@ -50,14 +50,14 @@ def new_game():
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
-
+    print(now)
     try:
         option = input("[M]ake delivery\n" +
                     "[T]ake on new deliveries\n" + 
                     "Select [D]estination\n" +
                     "[Q]uit game\n").lower()
         if option == 'm':
-            sam.make_delivery(dt.datetime.today())
+            sam.make_delivery(now)
             return True
         elif option == 't':
             select_deliveries(sam.from_depo.deliveries)
@@ -98,7 +98,7 @@ def select_deliveries(deliveries: list[Delivery]):
                 confirmed = True
                 print("Deliveries confirmed. Time to load up for departure.")
                 for delivery in sam.active_deliveries:
-                    delivery.time_activated = dt.datetime.today()
+                    delivery.time_activated = now
                 load_up(selected_deliveries)
             elif option == 'x':
                 sam.active_deliveries = previously_active_deliveries
@@ -151,11 +151,27 @@ def select_destination():
 
 # TODO: Implement traverse()
 def traverse(miles):
-    print("Traversing...")
-    print("...")
-    print("...")
-    print("...")
+    add_time(522)
+    #print("Traversing...")
+    #print("...")
+    #print("...")
+    #print("...")
     arrival()
+
+def add_time(seconds_to_add):
+    global now
+    hour = now.hour
+    minute = now.minute + (seconds_to_add // 60)
+    second = now.second + (seconds_to_add % 60)
+    if second > 59:
+        minute += 1
+        second = second % 60
+    if minute > 59:
+        hour += 1
+        minute = minute % 60
+    if hour > 23:
+        hour = 0    # For the purposes of this application, the day will simply reset.
+    now = now.replace(hour=hour, minute=minute, second=second)
 
 def arrival():
     print(f"\n*You've arrived at {sam.destination_depo.pretty_name().upper()}*\n")
