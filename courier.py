@@ -25,7 +25,8 @@ class Courier():
         self.destination_depo = destination_depo
 
     def make_delivery(self, time_completed):
-        for delivery in self.active_deliveries:
+        previously_active_deliveries = self.active_deliveries.copy()
+        for delivery in previously_active_deliveries:
             if self.from_depo.name == delivery.destination:
                 num_delivered = 0
                 total_damage = 0.00
