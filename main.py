@@ -93,6 +93,8 @@ def select_deliveries(deliveries: list[Delivery]):
         selectable_deliveries = [delivery for delivery in deliveries if delivery not in sam.active_deliveries]
         # Build prompt.
         prompt = ""
+        if len(selectable_deliveries) == 0:
+            print("We don't have any more deliveries available, check back later!")
         for delivery in selectable_deliveries:
             prompt = prompt + delivery.title + "\n"
         if len(selected_deliveries) > 0:
