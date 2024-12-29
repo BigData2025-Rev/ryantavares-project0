@@ -50,8 +50,8 @@ def new_game():
         starting_depo = depos[0]
     sam.from_depo = starting_depo
     # Clear results data.
-    open('records/delivery-results.csv', 'w').close()
-    open('records/delivered_parcels.csv', 'w').close()
+    #open('records/delivery-results.csv', 'w').close()
+    #open('records/delivered_parcels.csv', 'w').close()
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
@@ -134,11 +134,11 @@ def select_destination():
     valid = False
 
     while valid == False:
-        prompt = "Select Destination:\n"
+        prompt = f"Select Destination:\t You are at {sam.from_depo.pretty_coords()}\n"
         for depo in depos:
             if depo != sam.from_depo:
                 # TODO: Implement a better way to indicate direction and/or location of potential destinations.
-                prompt += depo.name + f"\t{sam.from_depo.distance_to(depo.coords):.2f} miles away at ({depo.coords['x']}, {depo.coords['y']})" 
+                prompt += depo.name + f"\t{sam.from_depo.distance_to(depo.coords):.2f} miles away at {depo.pretty_coords()}" 
                 if depo.name in [delivery.destination for delivery in sam.active_deliveries]:
                     prompt += "\t*ACTIVE DELIVERY*"
                 prompt += '\n'
