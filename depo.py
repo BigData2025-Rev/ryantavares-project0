@@ -24,7 +24,7 @@ class Depo:
             'weight': parcel.weight,
             'damage': 0
         }
-        file_name = f'records/delivered_parcels.csv'
+        file_name = 'records/delivered_parcels.csv'
         with open(file_name, 'a') as outfile:
             writer = csv.DictWriter(outfile, fieldnames=data)
             if outfile.tell() == 0:
