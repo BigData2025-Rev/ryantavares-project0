@@ -24,8 +24,8 @@ class Delivery:
     def record(self, num_delivered: int, total_damage: float, time_completed: dt.datetime = None):
         # Write results of the delivery to a csv file.
         file_name = f'records/delivery-results.csv'
-        completion_rate = num_delivered / self.num_of_parcels
-        damage_rate = total_damage / self.num_of_parcels
+        completion_rate = round(num_delivered / self.num_of_parcels * 100, 2)
+        damage_rate = round(total_damage / self.num_of_parcels * 100, 2)
         minutes_to_complete = round((time_completed - self.time_activated).seconds / 60, 2)
         data = {
             'delivery_key': self.key,
@@ -43,7 +43,7 @@ class Delivery:
         width = 30
         print(f"D{self.key} RESULT".center(width, '='))
         print(f"{num_delivered} / {self.num_of_parcels} {self.name_of_parcels}")
-        print(f"Completion Rate: {completion_rate:.2f}")
-        print(f"Damage Rate: {damage_rate:.2f}")
+        print(f"Completion Rate: {completion_rate:.2f}%")
+        print(f"Damage Rate: {damage_rate:.2f}%")
         print(f"Time to Complete: {minutes_to_complete:.2f} minutes")
         print("".center(width, '='))
