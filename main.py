@@ -155,10 +155,11 @@ def select_destination():
 
 def travel(miles):
     # BTT = Base Travel Time (seconds)
-    # 1 mile = BTT + 2(BTT) * (TOTAL-WEIGHT / MAX-WEIGHT)
+    # 1 mile = BTT + MULTIPLIER(BTT) * (TOTAL-WEIGHT / MAX-WEIGHT)
     BTT = 540
-    travel_time_sec = round((BTT + (2*BTT) * (sam.carrying_weight / sam.MAX_TOTAL_WEIGHT) * miles))
-    miles_per = BTT / (BTT + (2*BTT) * (sam.carrying_weight / sam.MAX_TOTAL_WEIGHT))
+    MULTIPLIER = 1.25
+    travel_time_sec = round((BTT + (MULTIPLIER*BTT) * (sam.carrying_weight / sam.MAX_TOTAL_WEIGHT) * miles))
+    miles_per = BTT / (BTT + (MULTIPLIER*BTT) * (sam.carrying_weight / sam.MAX_TOTAL_WEIGHT))
 
     advance_time(travel_time_sec)
     while miles > 0:
