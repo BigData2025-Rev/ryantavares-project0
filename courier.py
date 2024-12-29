@@ -45,6 +45,7 @@ class Courier():
         # Load each parcel onto back, left, or right.
         for parcel in parcels:
             loaded = False
+            self.show_inventory()
             while loaded == False:
                 try:
                     option = input(f"Load \'{parcel.name}, weight: {parcel.weight}\' onto [B]ack, [L]eft, [R]ight? (or [D]epart without loading remaining items)\n").lower()
@@ -69,20 +70,19 @@ class Courier():
                         raise InvalidInputError(['b', 'l', 'r', 'd'])
                 except InvalidInputError as e:
                     print(e)
-            self.carrying_weight = self.load['back']['weight'] + self.load['left']['weight'] + self.load['right']['weight']
-
-            # Show current load.
-            # TODO: Condense Format
-            print()
-            print(f"Total Weight: {self.carrying_weight}lb / {self.MAX_TOTAL_WEIGHT}lb\n" +
-                  f"Total Number: {len(self.load['back']['parcels']) + len(self.load['left']['parcels']) + len(self.load['right']['parcels'])}/{self.MAX_TOTAL_ITEMS}")
-            print(f"\tOn Back ({self.load['back']['weight']}lb / {self.MAX_BACK_WEIGHT}lb; {len(self.load['back']['parcels'])}/{self.MAX_BACK_ITEMS}):")
-            for parcel in self.load['back']['parcels']:
-                print(f"\t\t{parcel.name} {parcel.weight}lb")
-            print(f"\tOn Left ({self.load['left']['weight']}lb / {self.MAX_SIDE_WEIGHT}lb; {len(self.load['left']['parcels'])}/{self.MAX_SIDE_ITEMS}):")
-            for parcel in self.load['left']['parcels']:
-                print(f"\t\t{parcel.name} {parcel.weight}lb")
-            print(f"\tOn Right ({self.load['right']['weight']}lb / {self.MAX_SIDE_WEIGHT}lb; {len(self.load['right']['parcels'])}/{self.MAX_SIDE_ITEMS}):")
-            for parcel in self.load['right']['parcels']:
-                print(f"\t\t{parcel.name} {parcel.weight}lb")
-            print()
+            self.carrying_weight = self.load['back']['weight'] + self.load['left']['weight'] + self.load['right']['weight']   
+    
+    def show_inventory(self):
+        print()
+        print(f"Total Weight: {self.carrying_weight}lb / {self.MAX_TOTAL_WEIGHT}lb\n" +
+                f"Total Number: {len(self.load['back']['parcels']) + len(self.load['left']['parcels']) + len(self.load['right']['parcels'])}/{self.MAX_TOTAL_ITEMS}")
+        print(f"\tOn Back ({self.load['back']['weight']}lb / {self.MAX_BACK_WEIGHT}lb; {len(self.load['back']['parcels'])}/{self.MAX_BACK_ITEMS}):")
+        for parcel in self.load['back']['parcels']:
+            print(f"\t\t{parcel.name} {parcel.weight}lb")
+        print(f"\tOn Left ({self.load['left']['weight']}lb / {self.MAX_SIDE_WEIGHT}lb; {len(self.load['left']['parcels'])}/{self.MAX_SIDE_ITEMS}):")
+        for parcel in self.load['left']['parcels']:
+            print(f"\t\t{parcel.name} {parcel.weight}lb")
+        print(f"\tOn Right ({self.load['right']['weight']}lb / {self.MAX_SIDE_WEIGHT}lb; {len(self.load['right']['parcels'])}/{self.MAX_SIDE_ITEMS}):")
+        for parcel in self.load['right']['parcels']:
+            print(f"\t\t{parcel.name} {parcel.weight}lb")
+        print()
