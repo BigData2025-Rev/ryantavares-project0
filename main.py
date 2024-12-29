@@ -6,10 +6,11 @@ from delivery import Delivery
 from courier import Courier
 import datetime as dt
 import numpy as np
+import pandas as pd
 import json
 
 sam = Courier()             # The player.
-depos = []                  # Available depos in the world.
+depos: list[Depo] = []      # Available depos in the world.
 now = dt.datetime(year=2024, month=12, day=30, hour=9, minute=0, second=0, microsecond=0)   # The time in the game-world.
 
 def main():
@@ -49,8 +50,8 @@ def new_game():
         starting_depo = depos[0]
     sam.from_depo = starting_depo
     # Clear results data.
-    open('records/delivery-results.csv', 'w').close()
-    open('records/delivered_parcels.csv', 'w').close()
+    #open('records/delivery-results.csv', 'w').close()
+    #open('records/delivered_parcels.csv', 'w').close()
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
@@ -59,6 +60,7 @@ def at_depo():
         option = input("[M]ake delivery\n" +
                     "[T]ake on new deliveries\n" + 
                     "Select [D]estination\n" +
+                    "Show [R]esults\n" +
                     "[Q]uit game\n").lower()
         if option == 'm':
             sam.make_delivery(now)
@@ -71,10 +73,13 @@ def at_depo():
                 return False    # Courier is departing
             else:
                 return True
+        elif option == 'r':
+            show_results()
+            return True
         elif option == 'q':
             quit()
         else:
-            raise InvalidInputError(['m', 't', 'd', 'q'])
+            raise InvalidInputError(['m', 't', 'd', 'r', 'q'])
     except InvalidInputError as e:
         print(e)
         return True
@@ -278,6 +283,62 @@ def arrival():
     sam.from_depo = sam.destination_depo
     sam.destination_depo = None
 
+def show_results():
+    UND = "\033[4m"
+    END = "\033[0m"
+    dr = pd.read_csv('records/delivery-results.csv')
+    dp = pd.read_csv('records/delivered_parcels.csv')
+
+    print()
+    print("OVERALL GAME RESULTS".center(30, '='))
+    input("Enter any key to continue.\n")
+
+    print(UND + "Total Number of Parcels Delivered:" + END)
+    print(dp[dp.columns[0]].count())
+    input()
+
+    print(UND + "Total Weight of Parcels Delivered:" + END)
+    print(dp['weight'].sum())
+    input()
+
+    print(UND + "Total Number of Parcels Delivered by Depo:" + END)
+    print(dp.groupby(['in_depo'], sort=True)[dp.columns[0]].count().to_string())
+    input()
+
+    print(UND + "Total Weight of Parcels Delivered by Depo:" + END)
+    print(dp.groupby(['in_depo'], sort=True)['weight'].sum().to_string())
+    input()
+
+    print(UND + "Total Number of Each Parcel Delivered:" + END)
+    print(dp.groupby(['name'], sort=True)[dp.columns[0]].count().to_string())
+    input()
+
+    print(UND + "Total Number of Deliveries Made:" + END)
+    print(dr[dr.columns[0]].count())
+    input()
+
+    print(UND + "The Number of Deliveries With 100% Completion Rate:" + END)
+    print(dr.query('completion_rate == 100.0')[dr.columns[0]].count())
+    input()
+
+    print(UND + "Top 5 Fastest Deliveries:" + END)
+    print(dr.sort_values(['minutes_to_complete']).head(5).to_string(index=False))
+    input()
+
+    print(UND + "Total Number of Parcels Delivered vs. Expected Number of Parcels by Delivery:" + END)
+    df = dp.groupby(['from_delivery'], sort=True)[dp.columns[0]].count().to_frame()
+    num_expected = np.array([delivery.num_of_parcels for depo in depos for delivery in depo.deliveries])
+    num_deliveries = dr.groupby(['delivery_key'], sort=True)[dr.columns[0]].count().values
+    expected = num_deliveries * num_expected     # numpy array multiplication
+    print(df.assign(expected = expected).rename(columns={'in_depo': 'delivered'}).to_string())
+    input()
+
+    print(UND + "S-Rank Deliveries (Completion Rate == 100%, Damage Rate < 5%, Minutes To Complete < 90):" + END)
+    print(dr.query("completion_rate == 100.0 & damage_rate < 5.00 & minutes_to_complete < 90").to_string())
+
+    print()
+    print("END OF RESULTS".center(30, '='))
+    input("Enter any key to continue.\n")
 
 if __name__ == "__main__":
     main()
