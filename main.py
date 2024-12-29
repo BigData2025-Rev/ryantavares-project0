@@ -11,7 +11,7 @@ import json
 
 sam = Courier()             # The player.
 depos: list[Depo] = []      # Available depos in the world.
-now = dt.datetime(year=2024, month=12, day=30, hour=9, minute=0, second=0, microsecond=0)   # The time in the game-world.
+now = dt.datetime(year=2024, month=12, day=30, hour=6, minute=0, second=0, microsecond=0)   # The time in the game-world.
 
 def main():
     while game_loaded() == False:
@@ -50,8 +50,8 @@ def new_game():
         starting_depo = depos[0]
     sam.from_depo = starting_depo
     # Clear results data.
-    #open('records/delivery-results.csv', 'w').close()
-    #open('records/delivered_parcels.csv', 'w').close()
+    open('records/delivery-results.csv', 'w').close()
+    open('records/delivered_parcels.csv', 'w').close()
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
