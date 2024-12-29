@@ -55,7 +55,7 @@ def new_game():
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
-    print(now)
+    print(now.strftime('%H:%M:%S'))
     try:
         option = input("[M]ake delivery\n" +
                     "[T]ake on new deliveries\n" + 
