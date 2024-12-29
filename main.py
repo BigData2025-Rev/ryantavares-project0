@@ -50,8 +50,8 @@ def new_game():
         starting_depo = depos[0]
     sam.from_depo = starting_depo
     # Clear results data.
-    #open('records/delivery-results.csv', 'w').close()
-    #open('records/delivered_parcels.csv', 'w').close()
+    open('records/delivery-results.csv', 'w').close()
+    open('records/delivered_parcels.csv', 'w').close()
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
