@@ -96,7 +96,7 @@ def select_deliveries(deliveries: list[Delivery]):
         if len(selectable_deliveries) == 0:
             print("We don't have any more deliveries available, check back later!")
         for delivery in selectable_deliveries:
-            prompt = prompt + delivery.title + "\n"
+            prompt = prompt + delivery.pretty_title() + "\n"
         if len(selected_deliveries) > 0:
             prompt += "[C]onfirm selected deliveries?\n"
         prompt += "[x] to cancel\n"

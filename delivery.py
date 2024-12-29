@@ -47,3 +47,6 @@ class Delivery:
         print(f"Damage Rate: {damage_rate:.2f}%")
         print(f"Time to Complete: {minutes_to_complete:.2f} minutes")
         print("".center(width, '='))
+
+    def pretty_title(self):
+        return f"{self.title} ({self.num_of_parcels} {self.name_of_parcels}, {self.total_weight}lb)"
