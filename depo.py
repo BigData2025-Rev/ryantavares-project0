@@ -22,7 +22,7 @@ class Depo:
             'from_delivery': parcel.dkey,
             'name': parcel.name,
             'weight': parcel.weight,
-            'damage': 0
+            'damage': round(parcel.damage, 2)
         }
         file_name = 'records/delivered_parcels.csv'
         with open(file_name, 'a') as outfile:
