@@ -4,6 +4,7 @@ from parcel import Parcel
 from depo import Depo
 from delivery import Delivery
 from exceptions.invalid_input_error import InvalidInputError
+import numpy as np
 
 class Courier():
     MAX_BACK_ITEMS = 40
@@ -88,3 +89,81 @@ class Courier():
         for parcel in self.load['right']['parcels']:
             print(f"\t\t{parcel.name} {parcel.weight}lb")
         print()
+
+    def will_lose_balance(self) -> bool:
+        # BTC = Base Trip Chance (%)
+        BTC = 0.025
+        trip_chance = BTC
+
+        # More weight = more chance to trip (minor)
+        trip_chance += BTC * (self.carrying_weight / self.MAX_TOTAL_WEIGHT) 
+
+        # Imbalanced weight = more chance to trip (major)
+        imbalance = (self.load['left']['weight'] / self.MAX_SIDE_WEIGHT) - (self.load['right']['weight'] / self.MAX_SIDE_WEIGHT)
+        trip_chance += 5*BTC * abs(imbalance)
+        return self.happens_by_chance(trip_chance * 100)
+
+    def is_falling(self) -> bool:
+        print("You lose your balance!")
+        correct_key = ''
+        side = ''
+        if self.load['left']['weight'] > self.load['right']['weight']:
+            correct_key = 'r'
+            side = 'left'
+            option = input("Enter [R] to lean right!\n").lower()
+        else:
+            correct_key = 'l'
+            side = 'right'
+            option = input("Enter [L] to lean left!\n").lower()
+
+        if option == correct_key:
+            print("You regained your balance!\n")
+            return False
+        else:
+            self.fall(side)
+            return True
+
+    def fall(self, side):
+        DMG_SIDE = .30
+        DMG_BACK = .10
+        LOSS_CHANCE_SIDE = 0.05
+        LOSS_CHANCE_BACK = 0.025
+
+        print(f"You fall to your {side}!")
+
+        # Apply damage to parcels.
+        for parcel in self.load[side]['parcels']:
+            parcel.damage += DMG_SIDE
+        for parcel in self.load['back']['parcels']:
+            parcel.damage += DMG_BACK
+
+        # Apply percent chance to lose parcels.
+        for parcel in self.load[side]['parcels']:
+            if self.happens_by_chance(LOSS_CHANCE_SIDE * 100):
+                self.remove_parcel(parcel, side)
+                print(f"Lost {parcel.name}!")
+        for parcel in self.load['back']['parcels']:
+            if self.happens_by_chance(LOSS_CHANCE_BACK * 100):
+                self.remove_parcel(parcel, 'back')
+                print(f"Lost {parcel.name}!")
+
+        print("It takes you some time to recover.")
+        print("Some of your parcels took damage and you may have lost a few.\n")
+        input("Enter any key to continue.\n")
+
+    def apply_time_damage(self, seconds):
+        # DPS = parcel damage per second traveled (%)
+        DPS = 0.000005
+        for side in self.load:
+            for parcel in self.load[side]['parcels']:
+                if parcel.damage + DPS * seconds > 1.00:
+                    parcel.damage = 1.00
+                else:
+                    parcel.damage += DPS * seconds
+
+    # TODO: Move to happens_by_chance to another class.
+    def happens_by_chance(self, percent_chance) -> bool:
+        if np.random.uniform(0.00, 100.00) <= percent_chance:
+            return True
+        else:
+            return False

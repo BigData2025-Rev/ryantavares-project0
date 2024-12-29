@@ -162,8 +162,10 @@ def travel(miles):
 
     advance_time(travel_time_sec)
     while miles > 0:
-        if will_trip():
-            trip()
+        if sam.will_lose_balance():
+            advance_time(20)
+            if sam.is_falling():
+                advance_time(120)
         if miles < miles_per:
             print(f"{miles:.2f} miles traveled")
             miles -= miles
@@ -174,76 +176,9 @@ def travel(miles):
         input("Enter any key to continue.\n")
     arrival()
 
-def will_trip() -> bool:
-    # BTC = Base Trip Chance (%)
-    BTC = 0.025
-    trip_chance = BTC
-
-    # More weight = more chance to trip (minor)
-    trip_chance += BTC * (sam.carrying_weight / sam.MAX_TOTAL_WEIGHT) 
-
-    # Imbalanced weight = more chance to trip (major)
-    imbalance = (sam.load['left']['weight'] / sam.MAX_SIDE_WEIGHT) - (sam.load['right']['weight'] / sam.MAX_SIDE_WEIGHT)
-    trip_chance += 5*BTC * abs(imbalance)
-    return happens_by_chance(trip_chance * 100)
-
-def trip():
-    print("You lose your balance!")
-    correct_key = ''
-    side = ''
-    if sam.load['left']['weight'] > sam.load['right']['weight']:
-        correct_key = 'r'
-        side = 'left'
-        option = input("Enter [R] to lean right!\n").lower()
-    else:
-        correct_key = 'l'
-        side = 'right'
-        option = input("Enter [L] to lean left!\n").lower()
-
-    if option == correct_key:
-        print("You regained your balance!\n")
-        advance_time(20)
-    else:
-        fall(side)
-
-def fall(side):
-    DMG_SIDE = .30
-    DMG_BACK = .10
-    LOSS_CHANCE_SIDE = 0.05
-    LOSS_CHANCE_BACK = 0.025
-
-    print(f"You fall to your {side}!")
-
-    # Apply damage to parcels.
-    for parcel in sam.load[side]['parcels']:
-        parcel.damage += DMG_SIDE
-    for parcel in sam.load['back']['parcels']:
-        parcel.damage += DMG_BACK
-
-    # Apply percent chance to lose parcels.
-    for parcel in sam.load[side]['parcels']:
-        if happens_by_chance(LOSS_CHANCE_SIDE * 100):
-            sam.remove_parcel(parcel, side)
-            print(f"Lost {parcel.name}!")
-    for parcel in sam.load['back']['parcels']:
-        if happens_by_chance(LOSS_CHANCE_BACK * 100):
-            sam.remove_parcel(parcel, 'back')
-            print(f"Lost {parcel.name}!")
-
-    advance_time(120)
-    print("It takes you some time to recover.")
-    print("Some of your parcels took damage and you may have lost a few.\n")
-    input("Enter any key to continue.\n")
-
-def happens_by_chance(percent_chance) -> bool:
-    if np.random.uniform(0.00, 100.00) <= percent_chance:
-        return True
-    else:
-        return False
-
 def advance_time(seconds_to_add, outside=True):
     if outside:
-        apply_time_damage(seconds_to_add)
+        sam.apply_time_damage(seconds_to_add)
     global now
     hour = now.hour
     minute = now.minute + (seconds_to_add // 60)
@@ -257,16 +192,6 @@ def advance_time(seconds_to_add, outside=True):
     if hour > 23:
         hour = 0    # For the purposes of this application, the day will simply reset.
     now = now.replace(hour=hour, minute=minute, second=second)
-
-def apply_time_damage(seconds):
-    # DPS = parcel damage per second traveled (%)
-    DPS = 0.000005
-    for side in sam.load:
-        for parcel in sam.load[side]['parcels']:
-            if parcel.damage + DPS * seconds > 1.00:
-                parcel.damage = 1.00
-            else:
-                parcel.damage += DPS * seconds
 
 def arrival():
     print(f"\n*You've arrived at {sam.destination_depo.pretty_name().upper()}*\n")
