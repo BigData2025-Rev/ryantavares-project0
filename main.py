@@ -156,7 +156,7 @@ def travel(miles):
     travel_time_sec = round((BTT + (2*BTT) * (sam.carrying_weight / sam.MAX_TOTAL_WEIGHT) * miles))
     miles_per = BTT / (BTT + (2*BTT) * (sam.carrying_weight / sam.MAX_TOTAL_WEIGHT))
 
-    add_time(travel_time_sec)
+    advance_time(travel_time_sec)
     while miles > 0:
         if will_trip():
             trip()
@@ -198,7 +198,7 @@ def trip():
 
     if option == correct_key:
         print("You regained your balance!\n")
-        add_time(20)
+        advance_time(20)
     else:
         fall(side)
 
@@ -226,7 +226,7 @@ def fall(side):
             sam.remove_parcel(parcel, 'back')
             print(f"Lost {parcel.name}!")
 
-    add_time(120)
+    advance_time(120)
     print("It takes you some time to recover.")
     print("Some of your parcels took damage and you may have lost a few.\n")
     input("Enter any key to continue.\n")
@@ -237,7 +237,7 @@ def happens_by_chance(percent_chance) -> bool:
     else:
         return False
 
-def add_time(seconds_to_add, outside=True):
+def advance_time(seconds_to_add, outside=True):
     if outside:
         apply_time_damage(seconds_to_add)
     global now
