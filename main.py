@@ -50,8 +50,8 @@ def new_game():
         starting_depo = depos[0]
     sam.from_depo = starting_depo
     # Clear results data.
-    #open('records/delivery-results.csv', 'w').close()
-    #open('records/delivered_parcels.csv', 'w').close()
+    open('records/delivery-results.csv', 'w').close()
+    open('records/delivered_parcels.csv', 'w').close()
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
@@ -85,7 +85,7 @@ def at_depo():
         return True
 
 def select_deliveries(deliveries: list[Delivery]):
-    selected_deliveries = []
+    selected_deliveries: list[Delivery] = []
     previously_active_deliveries = sam.active_deliveries.copy()
     confirmed = False
 
@@ -108,7 +108,8 @@ def select_deliveries(deliveries: list[Delivery]):
                 print("Deliveries confirmed. Time to load up for departure.")
                 for delivery in sam.active_deliveries:
                     delivery.time_activated = now
-                load_up(selected_deliveries)
+                parcels = [parcel for delivery in selected_deliveries for parcel in delivery.generate_parcels()]
+                sam.arrange_parcels(parcels)
             elif option == 'x':
                 sam.active_deliveries = previously_active_deliveries
                 return
@@ -122,13 +123,6 @@ def select_deliveries(deliveries: list[Delivery]):
                 raise InvalidInputError(valid_keys + ['c', 'x']) if len(selected_deliveries) > 0 else InvalidInputError(valid_keys + ['x'])
         except InvalidInputError as e:
             print(e)
-
-
-def load_up(selected_deliveries: list[Delivery]):
-    parcels = []
-    for delivery in selected_deliveries:
-         parcels.extend(delivery.generate_parcels())
-    sam.arrange_parcels(parcels)
 
 def select_destination():
     valid = False

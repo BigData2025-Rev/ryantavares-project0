@@ -1,6 +1,8 @@
 """This file defines a courier object."""
 
 from parcel import Parcel
+from depo import Depo
+from delivery import Delivery
 from exceptions.invalid_input_error import InvalidInputError
 
 class Courier():
@@ -11,7 +13,7 @@ class Courier():
     MAX_SIDE_WEIGHT = 30.00
     MAX_TOTAL_WEIGHT = MAX_BACK_WEIGHT + (MAX_SIDE_WEIGHT * 2)
 
-    def __init__(self, load={}, carrying_weight=0, active_deliveries=[], from_depo=None, destination_depo=None):
+    def __init__(self, load={}, carrying_weight=0, active_deliveries: list[Delivery]=[], from_depo: Depo=None, destination_depo: Depo=None):
         self.load = load
         self.load['back'] = {'parcels':[], 'weight':0}
         self.load['left'] = {'parcels':[], 'weight':0}
