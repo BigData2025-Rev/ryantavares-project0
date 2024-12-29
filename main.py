@@ -50,8 +50,8 @@ def new_game():
         starting_depo = depos[0]
     sam.from_depo = starting_depo
     # Clear results data.
-    open('records/delivery-results.csv', 'w').close()
-    open('records/delivered_parcels.csv', 'w').close()
+    #open('records/delivery-results.csv', 'w').close()
+    #open('records/delivered_parcels.csv', 'w').close()
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
@@ -207,8 +207,12 @@ def arrival():
 def show_results():
     UND = "\033[4m"
     END = "\033[0m"
-    dr = pd.read_csv('records/delivery-results.csv')
-    dp = pd.read_csv('records/delivered_parcels.csv')
+    try:
+        dr = pd.read_csv('records/delivery-results.csv')
+        dp = pd.read_csv('records/delivered_parcels.csv')
+    except Exception as e:
+        print("No results to show. Make some deliveries first!")
+        return
 
     print()
     print("OVERALL GAME RESULTS".center(30, '='))
@@ -248,14 +252,16 @@ def show_results():
 
     print(UND + "Total Number of Parcels Delivered vs. Expected Number of Parcels by Delivery:" + END)
     df = dp.groupby(['from_delivery'], sort=True)[dp.columns[0]].count().to_frame()
-    num_expected = np.array([delivery.num_of_parcels for depo in depos for delivery in depo.deliveries])
+    valid_keys = dr['delivery_key'].unique().astype(str)
+    num_expected = np.array([delivery.num_of_parcels for depo in depos for delivery in depo.deliveries if delivery.key in valid_keys.tolist()])
     num_deliveries = dr.groupby(['delivery_key'], sort=True)[dr.columns[0]].count().values
     expected = num_deliveries * num_expected     # numpy array multiplication
     print(df.assign(expected = expected).rename(columns={'in_depo': 'delivered'}).to_string())
     input()
 
     print(UND + "S-Rank Deliveries (Completion Rate == 100%, Damage Rate < 5%, Minutes To Complete < 90):" + END)
-    print(dr.query("completion_rate == 100.0 & damage_rate < 5.00 & minutes_to_complete < 90").to_string())
+    df = dr.query("completion_rate == 100.0 & damage_rate < 5.00 & minutes_to_complete < 90")
+    print(df) if df.empty == False else print("You didn't make any S-Rank deliveries. Sorry!")
 
     print()
     print("END OF RESULTS".center(30, '='))
