@@ -1,4 +1,4 @@
-"""Custom Exception for handling invalid input options."""
+"""This module contains custom exceptions."""
 
 class InvalidInputError(Exception):
     def __init__(self, valid_keys: list[str], message=""):

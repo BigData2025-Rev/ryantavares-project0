@@ -1,6 +1,6 @@
 """This module contains all of the class definitions for the entities of the game."""
 
-from exceptions.invalid_input_error import InvalidInputError
+from exceptions import InvalidInputError
 import datetime as dt
 import csv
 import numpy as np
