@@ -48,8 +48,8 @@ def new_game():
         starting_depo = depos[0]
     sam.from_depo = starting_depo
     # Clear results data.
-    open('records/delivery-results.csv', 'w').close()
-    open('records/delivered_parcels.csv', 'w').close()
+    #open('records/delivery-results.csv', 'w').close()
+    #open('records/delivered_parcels.csv', 'w').close()
 
 def at_depo():
     print(f"{sam.from_depo.pretty_name(underline=True)}")
@@ -251,14 +251,32 @@ def show_results():
     print(dr.sort_values(['minutes_to_complete']).head(5).to_string(index=False))
     input()
 
-    print(UND + "Total Number of Parcels Delivered vs. Expected Number of Parcels by Delivery:" + END)
-    df = dp.groupby(['from_delivery'], sort=True)[dp.columns[0]].count().to_frame()
-    valid_keys = dr['delivery_key'].unique().astype(str)
-    num_expected = np.array([delivery.num_of_parcels for depo in depos for delivery in depo.deliveries if delivery.key in valid_keys.tolist()])
-    num_deliveries = dr.groupby(['delivery_key'], sort=True)[dr.columns[0]].count().values
-    expected = num_deliveries * num_expected     # numpy array multiplication
-    print(df.assign(expected = expected).rename(columns={'in_depo': 'delivered'}).to_string())
-    input()
+    # Had some trouble with the below data presentation, so it's in a try block to avoid any errors I may have missed.
+    try:
+        # Get data about number of completed deliveries and their expected total parcel counts.        
+        valid_keys = dr['delivery_key'].unique().astype(str)
+        num_expected = np.array([delivery.num_of_parcels for depo in depos for delivery in depo.deliveries if delivery.key in valid_keys.tolist()])
+        num_deliveries = dr.groupby(['delivery_key'], sort=True)[dr.columns[0]].count().values
+        expected = num_deliveries * num_expected     # numpy array multiplication
+        data = {
+            'dkey': valid_keys,
+            'expected': expected,
+            'delivery_count': num_deliveries
+        }
+
+        # Construct the dataframe for display, merging the total number of delivered parcels.
+        df = pd.DataFrame(data)
+        df['dkey'] = df['dkey'].astype(int)
+        count = dp.merge(df, left_on='from_delivery', right_on='dkey').groupby(['from_delivery'], sort=True)[dp.columns[0]].count().to_frame()
+        df = df.merge(count, left_on='dkey', right_on='from_delivery', how='outer')
+        df = df.astype('Int64').fillna(0)
+        df = df.iloc[:, [0, 3, 1, 2]]  # Reorder the columns
+        df = df.rename(columns={'dkey': 'from_delivery', 'in_depo': 'delivered'})
+        print(UND + "Total Number of Parcels Delivered vs. Expected Number of Parcels by Delivery:" + END)
+        print(df.to_string(index=False))
+        input()
+    except Exception as e:
+        pass
 
     print(UND + "S-Rank Deliveries (Completion Rate == 100%, Damage Rate < 5%, Minutes To Complete < 90):" + END)
     df = dr.query("completion_rate == 100.0 & damage_rate < 5.00 & minutes_to_complete < 90")
