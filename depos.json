@@ -5,28 +5,28 @@
         "coords": {"x": 0, "y": 0},
         "deliveries": [
             {
-            "key": "1",
-            "title": "Delivery [1]: The Waystation needs some medical supplies",
-            "name_of_parcels": "Antibiotics",
-            "num_of_parcels": 20,
-            "total_weight": 40,
-            "destination": "[W]aystation"
+                "key": "1",
+                "title": "Delivery [1]: The Waystation needs some medical supplies",
+                "name_of_parcels": "Antibiotics",
+                "num_of_parcels": 20,
+                "total_weight": 40,
+                "destination": "[W]aystation"
             },
             {
-            "key": "2",
-            "title": "Delivery [2]: The Distribution Center needs parts for repairs",
-            "name_of_parcels": "Parts",
-            "num_of_parcels": 5,
-            "total_weight": 100,
-            "destination": "[D]istribution Center"
+                "key": "2",
+                "title": "Delivery [2]: The Distribution Center needs parts for repairs",
+                "name_of_parcels": "Parts",
+                "num_of_parcels": 5,
+                "total_weight": 100,
+                "destination": "[D]istribution Center"
             },
             {
-            "key": "3",
-            "title": "Delivery [3]: The Wind Farm needs to restock on food",
-            "name_of_parcels": "Food",
-            "num_of_parcels": 15,
-            "total_weight": 45,
-            "destination": "Wind [F]arm"
+                "key": "3",
+                "title": "Delivery [3]: The Wind Farm needs to restock on food",
+                "name_of_parcels": "Food",
+                "num_of_parcels": 15,
+                "total_weight": 45,
+                "destination": "Wind [F]arm"
             }
         ]
     },
@@ -42,23 +42,23 @@
                 "num_of_parcels": 10,
                 "total_weight": 100,
                 "destination": "[W]aystation"
-                },
-                {
+            },
+            {
                 "key": "5",
                 "title": "Delivery [5]: Capitol Knot schools need some new options",
                 "name_of_parcels": "Books",
                 "num_of_parcels": 15,
                 "total_weight": 75,
                 "destination": "Capitol [K]not"
-                },
-                {
+            },
+            {
                 "key": "6",
                 "title": "Delivery [6]: The Wind Farm had a few towers break down",
                 "name_of_parcels": "Parts",
                 "num_of_parcels": 5,
                 "total_weight": 100,
                 "destination": "Wind [F]arm"
-                }
+            }
         ]
     },
     {
@@ -73,15 +73,15 @@
                 "num_of_parcels": 15,
                 "total_weight": 45,
                 "destination": "Capitol [K]not"
-                },
-                {
+            },
+            {
                 "key": "8",
                 "title": "Delivery [8]: The Distribution Center wants parts on hand",
                 "name_of_parcels": "Parts",
                 "num_of_parcels": 5,
                 "total_weight": 100,
                 "destination": "[D]istribution Center"
-                }
+            }
         ]
     },
     {
@@ -96,7 +96,7 @@
                 "num_of_parcels": 10,
                 "total_weight": 100,
                 "destination": "Capitol [K]not"
-                }
+            }
         ]
     }
 ]
