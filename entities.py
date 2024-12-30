@@ -163,7 +163,7 @@ class Courier():
                         if self.load['back']['weight'] + parcel.weight <= self.MAX_BACK_WEIGHT and len(self.load['back']['parcels']) < self.MAX_BACK_ITEMS:
                             self.load['back']['parcels'].append(parcel)
                             self.load['back']['weight'] += parcel.weight
-                        loaded = True
+                            loaded = True
                     elif option == 'l':
                         if self.load['left']['weight'] + parcel.weight <= self.MAX_SIDE_WEIGHT and len(self.load['left']['parcels']) < self.MAX_SIDE_ITEMS:
                             self.load['left']['parcels'].append(parcel)
