@@ -211,13 +211,31 @@ class Courier():
         return self.happens_by_chance(trip_chance * 100)
 
     def is_falling(self) -> bool:
+        BASE = 0.50
+        left_chance = BASE
+        right_chance = BASE
+
         print("You lose your balance!")
         correct_key = ''
         side = ''
         if self.load['left']['weight'] > self.load['right']['weight']:
-            correct_key = 'r'
-            side = 'left'
-            option = input("Enter [R] to lean right!\n").lower()
+            left_chance += 0.30
+        else:
+            right_chance += 0.30
+
+        i = 0
+        MAX_ATTEMPTS = 30
+        while i < MAX_ATTEMPTS:
+            if self.happens_by_chance(left_chance * 100):
+                correct_key = 'r'
+                side = 'left'
+                option = input("Enter [R] to lean right!\n").lower()
+                break
+            elif self.happens_by_chance(right_chance * 100):
+                correct_key = 'l'
+                side = 'right'
+                option = input("Enter [L] to lean left!\n").lower()
+                break
         else:
             correct_key = 'l'
             side = 'right'
