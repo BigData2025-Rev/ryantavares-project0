@@ -148,8 +148,12 @@ class Courier():
         self.load[side]['parcels'].remove(parcel)
         self.load[side]['weight'] -= parcel.weight
         self.carrying_weight -= parcel.weight
+
+    def add_parcel(self, parcel, side):
+        self.load[side]['parcels'].append(parcel)
+        self.load[side]['weight'] += parcel.weight
+        self.carrying_weight += parcel.weight
     
-    # TODO: Refactor arrange_parcels() to have less duplicate code and better string formatting
     def arrange_parcels(self, parcels: list[Parcel]):
         # Load each parcel onto back, left, or right.
         for parcel in parcels:
@@ -157,22 +161,19 @@ class Courier():
             self.show_inventory()
             while loaded == False:
                 try:
-                    option = input(f"Load \'{parcel.name}, weight: {parcel.weight}\' onto [B]ack, [L]eft, [R]ight? (or [D]epart without loading remaining items)\n").lower()
+                    option = input(f"Load \'{parcel.name}, weight: {parcel.weight}lb\' onto [B]ack, [L]eft, [R]ight? (or [D]epart without loading remaining items)\n").lower()
                     print()
                     if option == 'b':
                         if self.load['back']['weight'] + parcel.weight <= self.MAX_BACK_WEIGHT and len(self.load['back']['parcels']) < self.MAX_BACK_ITEMS:
-                            self.load['back']['parcels'].append(parcel)
-                            self.load['back']['weight'] += parcel.weight
+                            self.add_parcel(parcel, 'back')
                             loaded = True
                     elif option == 'l':
                         if self.load['left']['weight'] + parcel.weight <= self.MAX_SIDE_WEIGHT and len(self.load['left']['parcels']) < self.MAX_SIDE_ITEMS:
-                            self.load['left']['parcels'].append(parcel)
-                            self.load['left']['weight'] += parcel.weight
+                            self.add_parcel(parcel, 'left')
                             loaded = True
                     elif option == 'r':
                         if self.load['right']['weight'] + parcel.weight <= self.MAX_SIDE_WEIGHT and len(self.load['right']['parcels']) < self.MAX_SIDE_ITEMS:
-                            self.load['right']['parcels'].append(parcel)
-                            self.load['right']['weight'] += parcel.weight
+                            self.add_parcel(parcel, 'right')
                             loaded = True
                     elif option == 'd':
                         return
@@ -180,8 +181,8 @@ class Courier():
                         raise InvalidInputError(['b', 'l', 'r', 'd'])
                 except InvalidInputError as e:
                     print(e)
-            self.carrying_weight = self.load['back']['weight'] + self.load['left']['weight'] + self.load['right']['weight']   
     
+    # TODO: Refactor show_inventory() to have better string formatting
     def show_inventory(self):
         print(f"Total Weight: {self.carrying_weight}lb / {self.MAX_TOTAL_WEIGHT}lb\n" +
                 f"Total Number: {len(self.load['back']['parcels']) + len(self.load['left']['parcels']) + len(self.load['right']['parcels'])}/{self.MAX_TOTAL_ITEMS}")
