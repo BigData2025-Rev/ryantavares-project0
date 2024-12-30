@@ -53,6 +53,7 @@ class Courier():
             while loaded == False:
                 try:
                     option = input(f"Load \'{parcel.name}, weight: {parcel.weight}\' onto [B]ack, [L]eft, [R]ight? (or [D]epart without loading remaining items)\n").lower()
+                    print()
                     if option == 'b':
                         if self.load['back']['weight'] + parcel.weight <= self.MAX_BACK_WEIGHT and len(self.load['back']['parcels']) < self.MAX_BACK_ITEMS:
                             self.load['back']['parcels'].append(parcel)
@@ -77,7 +78,6 @@ class Courier():
             self.carrying_weight = self.load['back']['weight'] + self.load['left']['weight'] + self.load['right']['weight']   
     
     def show_inventory(self):
-        print()
         print(f"Total Weight: {self.carrying_weight}lb / {self.MAX_TOTAL_WEIGHT}lb\n" +
                 f"Total Number: {len(self.load['back']['parcels']) + len(self.load['left']['parcels']) + len(self.load['right']['parcels'])}/{self.MAX_TOTAL_ITEMS}")
         print(f"\tOn Back ({self.load['back']['weight']}lb / {self.MAX_BACK_WEIGHT}lb; {len(self.load['back']['parcels'])}/{self.MAX_BACK_ITEMS}):")

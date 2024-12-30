@@ -62,6 +62,7 @@ def at_depo():
                     "Select [D]estination\n" +
                     "Show [R]esults\n" +
                     "[Q]uit game\n").lower()
+        print()
         if option == 'm':
             sam.make_delivery(now)
             return True
@@ -105,9 +106,10 @@ def select_deliveries(deliveries: list[Delivery]):
         selectable_delivery_keys = [delivery.key for delivery in selectable_deliveries]
         try:
             option = input(prompt).lower()
+            print()
             if option == 'c' and len(selected_deliveries) > 0:
                 confirmed = True
-                print("Deliveries confirmed. Time to load up for departure.")
+                print("Deliveries confirmed. Time to load up for departure.\n")
                 for delivery in sam.active_deliveries:
                     delivery.time_activated = now
                 parcels = [parcel for delivery in selected_deliveries for parcel in delivery.generate_parcels()]
@@ -142,6 +144,7 @@ def select_destination():
 
         try:
             option = input(prompt).lower()
+            print()
             for depo in depos:
                 if option == depo.key and option != sam.from_depo.key:
                     sam.destination_depo = depo
@@ -212,10 +215,9 @@ def show_results():
         dr = pd.read_csv('records/delivery-results.csv')
         dp = pd.read_csv('records/delivered_parcels.csv')
     except Exception as e:
-        print("No results to show. Make some deliveries first!")
+        print("No results to show. Make some deliveries first!\n")
         return
 
-    print()
     print("OVERALL GAME RESULTS".center(30, '='))
     input("Enter any key to continue.\n")
 
