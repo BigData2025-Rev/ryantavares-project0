@@ -199,7 +199,7 @@ class Courier():
 
     def will_lose_balance(self) -> bool:
         # BTC = Base Trip Chance (%)
-        BTC = 0.025
+        BTC = 0.100
         trip_chance = BTC
 
         # More weight = more chance to trip (minor)
