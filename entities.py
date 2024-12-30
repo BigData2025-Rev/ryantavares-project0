@@ -221,7 +221,7 @@ class Courier():
         side = ''
         if self.load['left']['weight'] > self.load['right']['weight']:
             left_chance += 0.30
-        else:
+        elif self.load['right']['weight'] > self.load['left']['weight']:
             right_chance += 0.30
 
         i = 0
