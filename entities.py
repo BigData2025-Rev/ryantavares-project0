@@ -181,6 +181,7 @@ class Courier():
                         raise InvalidInputError(['b', 'l', 'r', 'd'])
                 except InvalidInputError as e:
                     print(e)
+        self.show_inventory()
     
     # TODO: Refactor show_inventory() to have better string formatting
     def show_inventory(self):
