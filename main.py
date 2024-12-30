@@ -1,9 +1,7 @@
 """The main entry point for the text-based game."""
 
+from entities import (Courier, Depo, Delivery)
 from exceptions.invalid_input_error import InvalidInputError
-from depo import Depo
-from delivery import Delivery
-from courier import Courier
 import datetime as dt
 import numpy as np
 import pandas as pd

@@ -1,10 +1,115 @@
-"""This file defines a courier object."""
+"""This module contains all of the class definitions for the entities of the game."""
 
-from parcel import Parcel
-from depo import Depo
-from delivery import Delivery
 from exceptions.invalid_input_error import InvalidInputError
+import datetime as dt
+import csv
 import numpy as np
+
+
+class Parcel:
+    def __init__(self, dkey, name, weight, damage=0.00):
+        self.dkey = dkey
+        self.name = name
+        self.weight = weight
+        self.damage = damage
+    
+    def __str__(self):
+        return f'Parcel(name={self.name}, weight={self.weight}, damage={self.damage})'
+    
+
+class Delivery:
+    def __init__(self, key, title, name_of_parcels, num_of_parcels, total_weight, destination, time_activated: dt.datetime = None):
+        self.key = key
+        self.title = title
+        self.name_of_parcels = name_of_parcels
+        self.num_of_parcels = num_of_parcels
+        self.total_weight = total_weight
+        self.destination = destination
+        self.time_activated = time_activated
+    
+    def generate_parcels(self) -> list[Parcel]:
+        parcels = []
+        weight_per = self.total_weight / self.num_of_parcels
+        for i in range(self.num_of_parcels):
+            parcels.append(Parcel(self.key, self.name_of_parcels, weight_per))
+        return parcels
+    
+    def record(self, num_delivered: int, total_damage: float, time_completed: dt.datetime = None):
+        # Write results of the delivery to a csv file.
+        file_name = 'records/delivery-results.csv'
+        completion_rate = round(num_delivered / self.num_of_parcels * 100, 2)
+        damage_rate = round(total_damage / self.num_of_parcels * 100, 2)
+        minutes_to_complete = round((time_completed - self.time_activated).seconds / 60, 2)
+        data = {
+            'delivery_key': self.key,
+            'completion_rate': completion_rate,
+            'damage_rate': damage_rate,
+            'minutes_to_complete': minutes_to_complete
+            }
+        with open(file_name, 'a') as outfile:
+            writer = csv.DictWriter(outfile, fieldnames=data)
+            if outfile.tell() == 0:
+                writer.writeheader()
+            writer.writerow(data)
+        
+        # Give some immediate information to the user.
+        width = 30
+        print(f"D{self.key} RESULT".center(width, '='))
+        print(f"{num_delivered} / {self.num_of_parcels} {self.name_of_parcels}")
+        print(f"Completion Rate: {completion_rate:.2f}%")
+        print(f"Damage Rate: {damage_rate:.2f}%")
+        print(f"Time to Complete: {minutes_to_complete:.2f} minutes")
+        print("".center(width, '='))
+        print()
+
+    def pretty_title(self):
+        return f"{self.title} ({self.num_of_parcels} {self.name_of_parcels}, {self.total_weight}lb)"
+
+
+class Location():
+    def __init__(self, coords):
+        self.coords = coords
+
+    def distance_to(self, destination_coords):
+        a = self.coords['x'] - destination_coords['x']
+        b = self.coords['y'] - destination_coords['y']
+        return (a**2 + b**2)**0.5
+    
+    def pretty_coords(self):
+        return f"({self.coords['x']}, {self.coords['y']})"
+
+
+class Depo(Location):
+    def __init__(self, key, name, coords, deliveries):
+        self.key = key
+        self.name = name
+        super(Depo, self).__init__(coords)
+        self.deliveries = [Delivery(**delivery) for delivery in deliveries]
+
+    def store(self, parcel: Parcel):
+        data = {
+            'in_depo': self.name,
+            'from_delivery': parcel.dkey,
+            'name': parcel.name,
+            'weight': parcel.weight,
+            'damage': round(parcel.damage, 2)
+        }
+        file_name = 'records/delivered_parcels.csv'
+        with open(file_name, 'a') as outfile:
+            writer = csv.DictWriter(outfile, fieldnames=data)
+            if outfile.tell() == 0:
+                writer.writeheader()
+            writer.writerow(data)
+    
+    def pretty_name(self, underline=False):
+        und = ""
+        end = ""
+        upp_key = self.key.upper()
+        if underline == True:
+            und = "\033[4m"
+            end = "\033[0m"
+        return f"{und}{self.name}{end}".replace(f"[{upp_key}]", f"{upp_key}")
+    
 
 class Courier():
     MAX_BACK_ITEMS = 40
